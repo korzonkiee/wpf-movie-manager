@@ -1,0 +1,207 @@
+﻿<Window x:Class="MovieManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:conv="clr-namespace:MovieManager.Converters"
+        xmlns:local="clr-namespace:MovieManager"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="Movies manager" Height="400" Width="600"
+        MinHeight="600" MinWidth="800">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Menu">
+                <MenuItem Header="Help"
+                          Click="MenuItem_Help"/>
+                <MenuItem Header="Add movies" 
+                          Click="MenuItem_AddMovie"/>
+                <MenuItem Header="Clear movies" 
+                          Click="MenuItem_ClearMovies"/>
+                <Separator />
+                <MenuItem Header="Import movies" 
+                          Click="MenuItem_ImportMovies"/>
+                <MenuItem Header="Export movies" 
+                          Click="MenuItem_ExportMovies"/>
+                <Separator />
+                <MenuItem Header="_Exit"
+                          Click="MenuItem_Exit"/>
+            </MenuItem>
+        </Menu>
+        <TabControl TabStripPlacement="Right">
+            <TabControl.Background>
+                <LinearGradientBrush StartPoint="0, 0" EndPoint="1, 1">
+                    <GradientStop Color="#007c04 " Offset="0"/>
+                    <GradientStop Color="#b2ffb4 " Offset="1"/>
+                </LinearGradientBrush>
+            </TabControl.Background>
+            <TabItem Header="View">
+                <Grid>
+                    <ListView Margin="10" Name="Movies" ItemContainerStyle="{StaticResource alternatingStyle}" AlternationCount="2">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <WrapPanel>
+                                    <StackPanel Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal" Margin="0, 0, 0, 5">
+                                            <TextBlock Text="Title: " />
+                                            <TextBlock Text="{Binding Title}" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0, 0, 0, 5">
+                                            <TextBlock Text="Director: " />
+                                            <TextBlock Text="{Binding Director}" />
+                                        </StackPanel>
+                                        <StackPanel Name="rating" Orientation="Horizontal" Margin="0, 0, 0, 5" Visibility="Collapsed">
+                                            <TextBlock Text="Rating: " />
+                                            <TextBlock Text="{Binding Rating}" />
+                                        </StackPanel>
+                                        <StackPanel Name="type" Orientation="Horizontal" Margin="0, 0, 0, 5" Visibility="Collapsed">
+                                            <TextBlock Text="Type: " />
+                                            <TextBlock Text="{Binding Type}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </WrapPanel>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Value="True"
+                                                 Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}">
+                                        <Setter TargetName="rating" Property="Visibility" Value="Visible"/>
+                                        <Setter TargetName="type" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Search">
+                <ScrollViewer>
+                    <StackPanel Orientation="Vertical">
+                        <Grid VerticalAlignment="Top">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                            </Grid.RowDefinitions>
+                            <CheckBox Name="TitleCheckBox" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0"/>
+                            <CheckBox Name="AuthorCheckBox" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="0"/>
+                            <CheckBox Name="RatingCheckBox" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="0"/>
+                            <CheckBox Name="TypeCheckBox" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="3" Grid.Column="0"/>
+                            <Label Content="By title" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="1"/>
+                            <Label Content="By author" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"/>
+                            <Label Content="By rating" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1"/>
+                            <Label Content="By type" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="3" Grid.Column="1"/>
+                            <TextBox Name="TitleTextBox" Grid.Row="0" Grid.Column="2"></TextBox>
+                            <TextBox Name="AuthorTextBox" Grid.Row="1" Grid.Column="2"></TextBox>
+                            <ComboBox Name="RatingComboBox" Width="150"  Grid.Row="2" Grid.Column="2">
+                                <ComboBoxItem>Terrible</ComboBoxItem>
+                                <ComboBoxItem>Bad</ComboBoxItem>
+                                <ComboBoxItem>Ok</ComboBoxItem>
+                                <ComboBoxItem>Good</ComboBoxItem>
+                                <ComboBoxItem>Awesome</ComboBoxItem>
+                            </ComboBox>
+                            <ComboBox Name="TypeComboBox" Width="150" Grid.Row="3" Grid.Column="2">
+                                <ComboBoxItem>Thriller</ComboBoxItem>
+                                <ComboBoxItem>Comedy</ComboBoxItem>
+                                <ComboBoxItem>Drama</ComboBoxItem>
+                                <ComboBoxItem>Horror</ComboBoxItem>
+                            </ComboBox>
+                        </Grid>
+                        <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+                            <Button Click="Button_Click_FindMovies" Content="Find movies" Margin="0, 0, 10, 0" Padding="20, 5, 20, 5"/>
+                            <Button Click="Button_Click_DeleteMovies" Content="Delete movies" Padding="20, 5, 20, 5"/>
+                        </StackPanel>
+                        <ListView Margin="10" Name="FilteredMovies" ItemContainerStyle="{StaticResource alternatingStyle}" AlternationCount="2">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <WrapPanel>
+                                        <StackPanel Orientation="Vertical">
+                                            <StackPanel Orientation="Horizontal" Margin="0, 0, 0, 5">
+                                                <TextBlock Text="Title: " />
+                                                <TextBlock Text="{Binding Title}" />
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="0, 0, 0, 5">
+                                                <TextBlock Text="Director: " />
+                                                <TextBlock Text="{Binding Director}" />
+                                            </StackPanel>
+                                            <StackPanel Name="rating" Orientation="Horizontal" Margin="0, 0, 0, 5" Visibility="Collapsed">
+                                                <TextBlock Text="Rating: " />
+                                                <TextBlock Text="{Binding Rating}" />
+                                            </StackPanel>
+                                            <StackPanel Name="type" Orientation="Horizontal" Margin="0, 0, 0, 5" Visibility="Collapsed">
+                                                <TextBlock Text="Type: " />
+                                                <TextBlock Text="{Binding Type}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </WrapPanel>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Value="True"
+                                                 Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}">
+                                            <Setter TargetName="rating" Property="Visibility" Value="Visible"/>
+                                            <Setter TargetName="type" Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>                       
+            <TabItem Header="Edit">
+                <DataGrid
+                    Name="MoviesEdit"
+                    ItemsSource="{Binding MoviesList}"
+                    AutoGenerateColumns="False"                    
+                    CanUserAddRows="True">
+                    <DataGrid.Resources>
+                        <conv:EnumToCollectionConverter x:Key="EnumToCollectionConverter"/>
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="*" Header="Title" Binding="{Binding Title}"/>
+                        <DataGridTextColumn Width="*" Header="Director" Binding="{Binding Director}"/>
+                        <DataGridComboBoxColumn Header="Rating" Width="*">
+                            <DataGridComboBoxColumn.ElementStyle>
+                                <Style>
+                                    <Setter Property="ComboBox.ItemsSource" Value="{Binding Path=Rating, Converter={StaticResource EnumToCollectionConverter}}" />
+                                    <Setter Property="ComboBox.SelectedValuePath" Value="Key"/>
+                                    <Setter Property="ComboBox.DisplayMemberPath" Value="Value"/>
+                                    <Setter Property="ComboBox.SelectedValue" Value="{Binding Path=Rating}"/>
+                                </Style>
+                            </DataGridComboBoxColumn.ElementStyle>
+                            <DataGridComboBoxColumn.EditingElementStyle>
+                                <Style>
+                                    <Setter Property="ComboBox.ItemsSource" Value="{Binding Path=Rating, Converter={StaticResource EnumToCollectionConverter}}" />
+                                    <Setter Property="ComboBox.SelectedValuePath" Value="Key"/>
+                                    <Setter Property="ComboBox.DisplayMemberPath" Value="Value"/>
+                                    <Setter Property="ComboBox.SelectedValue" Value="{Binding Path=Rating}"/>
+                                </Style>
+                            </DataGridComboBoxColumn.EditingElementStyle>
+                        </DataGridComboBoxColumn>
+                        <DataGridComboBoxColumn Header="Type" Width="*">
+                            <DataGridComboBoxColumn.ElementStyle>
+                                <Style>
+                                    <Setter Property="ComboBox.ItemsSource" Value="{Binding Path=Type, Converter={StaticResource EnumToCollectionConverter}}" />
+                                    <Setter Property="ComboBox.SelectedValuePath" Value="Key"/>
+                                    <Setter Property="ComboBox.DisplayMemberPath" Value="Value"/>
+                                    <Setter Property="ComboBox.SelectedValue" Value="{Binding Path=Type}"/>
+                                </Style>
+                            </DataGridComboBoxColumn.ElementStyle>
+                            <DataGridComboBoxColumn.EditingElementStyle>
+                                <Style>
+                                    <Setter Property="ComboBox.ItemsSource" Value="{Binding Path=Type, Converter={StaticResource EnumToCollectionConverter}}" />
+                                    <Setter Property="ComboBox.SelectedValuePath" Value="Key"/>
+                                    <Setter Property="ComboBox.DisplayMemberPath" Value="Value"/>
+                                    <Setter Property="ComboBox.SelectedValue" Value="{Binding Path=Type}"/>
+                                </Style>
+                            </DataGridComboBoxColumn.EditingElementStyle>
+                        </DataGridComboBoxColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>
